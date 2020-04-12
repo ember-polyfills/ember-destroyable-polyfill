@@ -9,6 +9,55 @@
 [![dependencies Status](https://david-dm.org/buschtoens/ember-destroyable-polyfill/status.svg)](https://david-dm.org/buschtoens/ember-destroyable-polyfill)
 [![devDependencies Status](https://david-dm.org/buschtoens/ember-destroyable-polyfill/dev-status.svg)](https://david-dm.org/buschtoens/ember-destroyable-polyfill?type=dev)
 
-Polyfill for [RFC 580 "Destroyables"][rfc-580]. 
+Polyfill for [RFC 580 "Destroyables"][rfc-580].
 
 [rfc-580]: https://github.com/emberjs/rfcs/pull/580
+
+## Installation
+
+```bash
+ember install ember-destroyable-polyfill
+```
+
+For addons, pass the `-S` flag.
+
+## Summary
+
+Adds an API for registering destroyables and destructors with Ember's built in
+destruction hierarchy.
+
+```js
+import { registerDestructor } from '@ember/destroyable';
+
+class MyComponent extends Component {
+  constructor() {
+    let timeoutId = setTimeout(() => console.log('hello'), 1000);
+    registerDestructor(this, () => clearTimeout(timeoutId));
+  }
+}
+```
+
+The API will also enable users to create and manage their own destroyables, and
+associate them with a parent destroyable.
+
+```js
+import {
+  associateDestroyableChild,
+  registerDestructor
+} from '@ember/destroyable';
+
+class TimeoutManager {
+  constructor(parent, fn, timeout = 1000) {
+    let timeoutId = setTimeout(fn, timeout);
+    associateDestroyableChild(parent, this);
+    registerDestructor(this, () => clearTimeout(timeoutId));
+  }
+}
+
+class MyComponent extends Component {
+  manager = new TimeoutManager(this, () => console.log('hello'));
+}
+```
+
+For detailed usage instructions, refer to the
+[RFC 580 "Destroyables"][rfc-580].
