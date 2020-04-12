@@ -1,3 +1,75 @@
+import { assert } from '@ember/debug';
+import { schedule } from '@ember/runloop';
+import { DEBUG } from '@glimmer/env';
+
+export type Destructor<T extends object = object> = (destroyable: T) => void;
+
+const DESTRUCTORS = DEBUG
+  ? new Map<object, Set<Destructor>>()
+  : new WeakMap<object, Set<Destructor>>();
+
+const DESTROYABLE_CHILDREN = new WeakMap<object, Set<object>>();
+const DESTROYABLE_PARENTS = DEBUG ? new Map<object, object>() : undefined;
+
+const DESTROYING = new WeakSet();
+const DESTROYED = new WeakSet();
+
+function getDestructors<T extends object>(destroyable: T): Set<Destructor<T>> {
+  if (!DESTRUCTORS.has(Object)) DESTRUCTORS.set(destroyable, new Set());
+  return DESTRUCTORS.get(destroyable)!;
+}
+
+function getDestroyableChildren(destroyable: object): Set<object> {
+  if (!DESTROYABLE_CHILDREN.has(Object))
+    DESTROYABLE_CHILDREN.set(destroyable, new Set());
+  return DESTROYABLE_CHILDREN.get(destroyable)!;
+}
+
+/**
+ * Receives a destroyable, and returns `true` if the destroyable has begun
+ * destroying. Otherwise returns false.
+ *
+ * @example
+ * ```ts
+ * const obj = {};
+ * isDestroying(obj); // false
+ * destroy(obj);
+ * isDestroying(obj); // true
+ * ```
+ */
+export function isDestroying(destroyable: object): boolean {
+  return DESTROYING.has(destroyable);
+}
+
+/**
+ * Receives a destroyable, and returns `true` if the destroyable has finished
+ * destroying. Otherwise returns false.
+ *
+ * @example
+ * ```ts
+ * const obj = {};
+ * isDestroyed(obj); // false
+ * destroy(obj);
+ * // ...sometime later, after scheduled destruction
+ * isDestroyed(obj); // true
+ * ```
+ */
+export function isDestroyed(destroyable: object): boolean {
+  return DESTROYED.has(destroyable);
+}
+
+/**
+ * Asserts that the destroyable was not yet destroyed and is not currently being
+ * destroyed.
+ */
+function assertNotDestroyed(destroyable: object): void | never {
+  assert(`'${destroyable}' was already destroyed.`, !isDestroyed(destroyable));
+  assert(
+    `'${destroyable}' is already being destroyed.`,
+    !isDestroying(destroyable)
+  );
+}
+
 /**
  * This function is used to associate a destroyable object with a parent.
  * When the parent is destroyed, all registered children will also be destroyed.
@@ -20,10 +92,23 @@
  *
  * @note Attempting to associate a child to multiple parents throws an error.
  */
-declare function associateDestroyableChild<T extends object>(
+export function associateDestroyableChild<T extends object>(
   parent: object,
   child: T
-): T;
+): T {
+  if (DEBUG) assertNotDestroyed(parent);
+  if (DEBUG) assertNotDestroyed(child);
+
+  assert(
+    `'${child}' is already a child of '${parent}'.`,
+    !DESTROYABLE_PARENTS?.has(child)
+  );
+
+  DESTROYABLE_PARENTS?.set(child, parent);
+  getDestroyableChildren(parent).add(child);
+
+  return child;
+}
 
 /**
  * Receives a destroyable object and a destructor function, and associates the
@@ -62,10 +147,19 @@ declare function associateDestroyableChild<T extends object>(
  * @note Attempting to register the same destructor multiple times should throw
  * an error.
  */
-declare function registerDestructor<T extends object>(
+export function registerDestructor<T extends object>(
   destroyable: T,
-  destructor: (destroyable: T) => void
-): (destroyable: T) => void;
+  destructor: Destructor<T>
+): Destructor<T> {
+  if (DEBUG) assertNotDestroyed(destroyable);
+  const destructors = getDestructors(destroyable);
+  assert(
+    `'${destructor}' is already registered with '${destroyable}'.`,
+    !destructors.has(destructor)
+  );
+  destructors.add(destructor);
+  return destructor;
+}
 
 /**
  * Receives a destroyable and a destructor function, and de-associates the
@@ -94,10 +188,18 @@ declare function registerDestructor<T extends object>(
  * @note Calling with a destructor that is not associated with the object throws
  * an error.
  */
-declare function unregisterDestructor<T extends object>(
+export function unregisterDestructor<T extends object>(
   destroyable: T,
-  destructor: (destroyable: T) => void
-): void;
+  destructor: Destructor<T>
+): void {
+  if (DEBUG) assertNotDestroyed(destroyable);
+  const destructors = getDestructors(destroyable);
+  assert(
+    `'${destructor}' is not registered with '${destroyable}'.`,
+    destructors.has(destructor)
+  );
+  destructors.delete(destructor);
+}
 
 /**
  * Initiates the destruction of a destroyable object. It runs all associated
@@ -133,36 +235,24 @@ declare function unregisterDestructor<T extends object>(
  * associated children will not throw an error, and will do nothing.
  *
  */
-declare function destroy(destroyable: object): void;
+export function destroy(destroyable: object): void {
+  if (isDestroying(destroyable) || isDestroyed(destroyable)) return;
 
-/**
- * Receives a destroyable, and returns `true` if the destroyable has begun
- * destroying. Otherwise returns false.
- *
- * @example
- * ```ts
- * const obj = {};
- * isDestroying(obj); // false
- * destroy(obj);
- * isDestroying(obj); // true
- * ```
- */
-declare function isDestroying(destroyable: object): boolean;
+  DESTROYING.add(destroyable);
 
-/**
- * Receives a destroyable, and returns `true` if the destroyable has finished
- * destroying. Otherwise returns false.
- *
- * @example
- * ```ts
- * const obj = {};
- * isDestroyed(obj); // false
- * destroy(obj);
- * // ...sometime later, after scheduled destruction
- * isDestroyed(obj); // true
- * ```
- */
-declare function isDestroyed(destroyable: object): boolean;
+  schedule('destroy', () => {
+    for (const destructor of getDestructors(destroyable))
+      destructor(destroyable);
+  });
+
+  for (const child of getDestroyableChildren(destroyable)) destroy(child);
+
+  schedule('destroy', () => DESTROYED.add(destroyable));
+}
+
+interface UndestroyedDestroyablesAssertionError extends Error {
+  destroyables: IterableIterator<object>;
+}
 
 /**
  * This function asserts that all objects which have associated destructors or
@@ -171,4 +261,18 @@ declare function isDestroyed(destroyable: object): boolean;
  * `ember-mocha` can use to hook into and validate that all destroyables have in
  * fact been destroyed.
  */
-declare function assertDestroyablesDestroyed(): void;
+export function assertDestroyablesDestroyed(): void | never {
+  if (!DEBUG)
+    throw new Error(
+      `'assertDestroyablesDestroyed()' is only available in DEBUG mode.`
+    );
+
+  const destructors = DESTRUCTORS as Map<object, WeakSet<Destructor>>;
+
+  if (destructors.size > 0) {
+    const error = new Error(
+      `${destructors.size} objects were not destroyed`
+    ) as UndestroyedDestroyablesAssertionError;
+    error.destroyables = destructors.keys();
+  }
+}
