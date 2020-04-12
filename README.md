@@ -13,9 +13,6 @@ Polyfill for [RFC 580 "Destroyables"][rfc-580].
 
 [rfc-580]: https://github.com/emberjs/rfcs/pull/580
 
-> ⚠️ This polyfill is not complete yet: It does not integrate with the legacy
-> method-based hooks yet.
->
 > ⚠️The RFC is currently in Final Comment Period and hasn't been merged yet.
 > Things may still change.
 

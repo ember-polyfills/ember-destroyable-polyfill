@@ -1,4 +1,5 @@
 import { assert } from '@ember/debug';
+import CoreObject from '@ember/object/core';
 import { schedule } from '@ember/runloop';
 import { DEBUG } from '@glimmer/env';
 
@@ -38,7 +39,10 @@ function getDestroyableChildren(destroyable: object): Set<object> {
  * ```
  */
 export function isDestroying(destroyable: object): boolean {
-  return DESTROYING.has(destroyable);
+  return (
+    DESTROYING.has(destroyable) ||
+    (destroyable instanceof CoreObject && destroyable.isDestroying)
+  );
 }
 
 /**
@@ -55,7 +59,10 @@ export function isDestroying(destroyable: object): boolean {
  * ```
  */
 export function isDestroyed(destroyable: object): boolean {
-  return DESTROYED.has(destroyable);
+  return (
+    DESTROYED.has(destroyable) ||
+    (destroyable instanceof CoreObject && destroyable.isDestroyed)
+  );
 }
 
 /**
@@ -239,6 +246,7 @@ export function destroy(destroyable: object): void {
   if (isDestroying(destroyable) || isDestroyed(destroyable)) return;
 
   DESTROYING.add(destroyable);
+  if (destroyable instanceof CoreObject) destroyable.destroy();
 
   schedule('destroy', () => {
     for (const destructor of getDestructors(destroyable))
