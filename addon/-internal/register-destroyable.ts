@@ -3,7 +3,9 @@ import { destroy as _destroy } from '@ember/destroyable';
 const DESTROYABLES = new WeakSet();
 
 export function registerDestroyable(
-  Class: new () => { destroy?: () => unknown; willDestroy?: () => unknown }
+  Class:
+    | (new () => { destroy: () => unknown })
+    | (new () => { willDestroy: () => void })
 ): void {
   if (DESTROYABLES.has(Class)) return;
   DESTROYABLES.add(Class);
