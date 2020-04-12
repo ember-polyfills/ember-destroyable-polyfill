@@ -12,7 +12,7 @@ module.exports = {
     this._ensureThisImport();
 
     const checker = new VersionChecker(this);
-    const emberVersion = checker.forEmber();
+    const emberVersion = checker.for('ember-source');
 
     if (emberVersion.lt('4.0.0')) {
       this.import('vendor/ember-destroyable-polyfill/alias-module.js');
