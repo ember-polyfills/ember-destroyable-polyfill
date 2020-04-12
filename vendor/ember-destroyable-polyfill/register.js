@@ -3,7 +3,7 @@
     define.alias('ember-destroyable-polyfill', '@ember/destroyable');
 
     setTimeout(function () {
-      require('ember-destroyable-polyfill/-internal/patch-core-object');
+      require('ember-destroyable-polyfill/-internal/register-framework-classes');
     }, 0);
   }
 })();
