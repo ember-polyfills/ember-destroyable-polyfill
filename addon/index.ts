@@ -15,12 +15,12 @@ const DESTROYING = new WeakSet();
 const DESTROYED = new WeakSet();
 
 function getDestructors<T extends object>(destroyable: T): Set<Destructor<T>> {
-  if (!DESTRUCTORS.has(Object)) DESTRUCTORS.set(destroyable, new Set());
+  if (!DESTRUCTORS.has(destroyable)) DESTRUCTORS.set(destroyable, new Set());
   return DESTRUCTORS.get(destroyable)!;
 }
 
 function getDestroyableChildren(destroyable: object): Set<object> {
-  if (!DESTROYABLE_CHILDREN.has(Object))
+  if (!DESTROYABLE_CHILDREN.has(destroyable))
     DESTROYABLE_CHILDREN.set(destroyable, new Set());
   return DESTROYABLE_CHILDREN.get(destroyable)!;
 }
@@ -247,11 +247,15 @@ export function destroy(destroyable: object): void {
 
   for (const child of getDestroyableChildren(destroyable)) destroy(child);
 
-  schedule('destroy', () => DESTROYED.add(destroyable));
+  schedule('destroy', () => {
+    DESTROYED.add(destroyable);
+    DESTRUCTORS.delete(destroyable);
+    DESTROYABLE_PARENTS?.delete(destroyable);
+  });
 }
 
 interface UndestroyedDestroyablesAssertionError extends Error {
-  destroyables: IterableIterator<object>;
+  destroyables: object[];
 }
 
 /**
@@ -268,11 +272,19 @@ export function assertDestroyablesDestroyed(): void | never {
     );
 
   const destructors = DESTRUCTORS as Map<object, WeakSet<Destructor>>;
+  const children = DESTROYABLE_PARENTS!;
 
-  if (destructors.size > 0) {
+  if (destructors.size > 0 || children.size > 0) {
     const error = new Error(
-      `${destructors.size} objects were not destroyed`
+      `Not all destroyable objects were destroyed`
     ) as UndestroyedDestroyablesAssertionError;
-    error.destroyables = destructors.keys();
+
+    Object.defineProperty(error, 'destroyables', {
+      get() {
+        return [...new Set([...destructors.keys(), ...children.keys()])];
+      }
+    });
+
+    throw error;
   }
 }
