@@ -1,38 +1,14 @@
-ember-destroyable-polyfill
-==============================================================================
+# ember-destroyable-polyfill
 
-[Short description of the addon.]
+[![CI](https://github.com/buschtoens/ember-destroyable-polyfill/workflows/CI/badge.svg)](https://github.com/buschtoens/ember-destroyable-polyfill/actions)
+[![npm version](https://badge.fury.io/js/ember-destroyable-polyfill.svg)](http://badge.fury.io/js/ember-destroyable-polyfill)
+[![Download Total](https://img.shields.io/npm/dt/ember-destroyable-polyfill.svg)](http://badge.fury.io/js/ember-destroyable-polyfill)
+[![Ember Observer Score](https://emberobserver.com/badges/ember-destroyable-polyfill.svg)](https://emberobserver.com/addons/ember-destroyable-polyfill)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)  
+[![Dependabot enabled](https://img.shields.io/badge/dependabot-enabled-blue.svg?logo=dependabot)](https://dependabot.com/)
+[![dependencies Status](https://david-dm.org/buschtoens/ember-destroyable-polyfill/status.svg)](https://david-dm.org/buschtoens/ember-destroyable-polyfill)
+[![devDependencies Status](https://david-dm.org/buschtoens/ember-destroyable-polyfill/dev-status.svg)](https://david-dm.org/buschtoens/ember-destroyable-polyfill?type=dev)
 
+Polyfill for [RFC 580 "Destroyables"][rfc-580]. 
 
-Compatibility
-------------------------------------------------------------------------------
-
-* Ember.js v3.12 or above
-* Ember CLI v2.13 or above
-* Node.js v10 or above
-
-
-Installation
-------------------------------------------------------------------------------
-
-```
-ember install ember-destroyable-polyfill
-```
-
-
-Usage
-------------------------------------------------------------------------------
-
-[Longer description of how to use the addon in apps.]
-
-
-Contributing
-------------------------------------------------------------------------------
-
-See the [Contributing](CONTRIBUTING.md) guide for details.
-
-
-License
-------------------------------------------------------------------------------
-
-This project is licensed under the [MIT License](LICENSE.md).
+[rfc-580]: https://github.com/emberjs/rfcs/pull/580
