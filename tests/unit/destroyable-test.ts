@@ -192,9 +192,9 @@ module('destroyable', function (_hooks) {
       assert.verifySteps(
         [
           'parent-willDestroy',
-          'child-willDestroy',
           'parent-first',
           'parent-second',
+          'child-willDestroy',
           'child-first',
           'child-second'
         ],
@@ -255,9 +255,9 @@ module('destroyable', function (_hooks) {
       assert.verifySteps(
         [
           'parent-willDestroy',
-          'child-willDestroy',
           'parent-first',
           'parent-second',
+          'child-willDestroy',
           'child-first',
           'child-second'
         ],
