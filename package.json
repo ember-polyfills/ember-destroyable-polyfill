@@ -11,7 +11,7 @@
     "ember-lifeline",
     "ember-concurrency"
   ],
-  "repository": "buschtoens/ember-destroyable-polyfill",
+  "repository": "ember-polyfills/ember-destroyable-polyfill",
   "license": "MIT",
   "author": "Jan Buschtöns <jan@buschtoens.me> (https://jan.buschtoens.me)",
   "directories": {
