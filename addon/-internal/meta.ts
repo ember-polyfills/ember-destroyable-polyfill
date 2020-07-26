@@ -1,5 +1,8 @@
 /* eslint-disable no-bitwise */
+// import { gte } from 'ember-compatibility-helpers';
 import Ember from 'ember';
+
+import { gte } from 'ember-compatibility-helpers';
 
 type UpdatableTag = undefined;
 
@@ -152,10 +155,14 @@ declare class _Meta {
 }
 
 export type Meta = _Meta;
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-export const Meta = Ember.__loader.require('@ember/-internals/meta/lib/meta')
-  .Meta as typeof _Meta;
+export const Meta = gte('3.6.0')
+  ? // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    (Ember.__loader.require('@ember/-internals/meta/lib/meta')
+      .Meta as typeof _Meta)
+  : // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+    (Ember.__loader.require('ember-meta/lib/meta').Meta as typeof _Meta);
 
 /**
  * Retrieves the meta hash for an object. If `writable` is true ensures the hash
