@@ -8,6 +8,7 @@ import { registerDestructor } from '@ember/destroyable';
 import GlimmerComponent from '@glimmer/component';
 
 import { hbs } from 'ember-cli-htmlbars';
+import { gte } from 'ember-compatibility-helpers';
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import Modifier from 'ember-modifier';
@@ -15,23 +16,25 @@ import Modifier from 'ember-modifier';
 module('Framework Classes Integration', function (hooks) {
   setupRenderingTest(hooks);
 
-  test('GlimmerComponent', async function (assert) {
-    this.owner.register(
-      'component:dummy',
-      class DummyComponent extends GlimmerComponent {
-        constructor(owner: unknown, args: {}) {
-          super(owner, args);
+  if (gte('3.8.0')) {
+    test('GlimmerComponent', async function (assert) {
+      this.owner.register(
+        'component:dummy',
+        class DummyComponent extends GlimmerComponent {
+          constructor(owner: unknown, args: {}) {
+            super(owner, args);
 
-          registerDestructor(this, () => assert.step('destructor'));
+            registerDestructor(this, () => assert.step('destructor'));
+          }
         }
-      }
-    );
+      );
 
-    await render(hbs`<Dummy />`);
-    await clearRender();
+      await render(hbs`<Dummy />`);
+      await clearRender();
 
-    assert.verifySteps(['destructor']);
-  });
+      assert.verifySteps(['destructor']);
+    });
+  }
 
   test('EmberComponent', async function (assert) {
     this.owner.register(
