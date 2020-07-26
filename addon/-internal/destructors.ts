@@ -6,12 +6,14 @@ import { meta, deleteMeta } from './meta';
 
 export type Destructor<T extends object = object> = (destroyable: T) => void;
 
-const DESTRUCTORS = DEBUG
-  ? new Map<object, Set<Destructor>>()
-  : new WeakMap<object, Set<Destructor>>();
-
+let isTesting = false;
+let DESTRUCTORS:
+  | Map<object, Set<Destructor>>
+  | WeakMap<object, Set<Destructor>> = new Map<object, Set<Destructor>>();
+let DESTROYABLE_PARENTS:
+  | Map<object, object>
+  | WeakMap<object, object> = new WeakMap<object, object>();
 const DESTROYABLE_CHILDREN = new WeakMap<object, Set<object>>();
-const DESTROYABLE_PARENTS = DEBUG ? new Map<object, object>() : undefined;
 
 function getDestructors<T extends object>(destroyable: T): Set<Destructor<T>> {
   if (!DESTRUCTORS.has(destroyable)) DESTRUCTORS.set(destroyable, new Set());
@@ -100,10 +102,10 @@ export function associateDestroyableChild<T extends object>(
 
   assert(
     `'${child}' is already a child of '${parent}'.`,
-    !DESTROYABLE_PARENTS?.has(child)
+    !DESTROYABLE_PARENTS.has(child)
   );
 
-  DESTROYABLE_PARENTS?.set(child, parent);
+  DESTROYABLE_PARENTS.set(child, parent);
   getDestroyableChildren(parent).add(child);
 
   return child;
@@ -261,12 +263,22 @@ export function runDestructors(destroyable: object): void {
     deleteMeta(destroyable);
     m.setSourceDestroyed();
     DESTRUCTORS.delete(destroyable);
-    DESTROYABLE_PARENTS?.delete(destroyable);
+    DESTROYABLE_PARENTS.delete(destroyable);
   });
 }
 
 interface UndestroyedDestroyablesAssertionError extends Error {
   destroyables: object[];
+}
+
+/**
+ * This function sets up the internal destroyables system in order to be able to call
+ * assertDestroyablesDestroyed later.
+ */
+export function enableDestroyableTracking() {
+  DESTRUCTORS = new Map<object, Set<Destructor>>();
+  DESTROYABLE_PARENTS = new Map<object, object>();
+  isTesting = true;
 }
 
 /**
@@ -277,13 +289,18 @@ interface UndestroyedDestroyablesAssertionError extends Error {
  * fact been destroyed.
  */
 export function assertDestroyablesDestroyed(): void | never {
-  if (!DEBUG)
+  if (!isTesting) {
     throw new Error(
-      `'assertDestroyablesDestroyed()' is only available in DEBUG mode.`
+      'Attempted to assert destroyables destroyed, but you did not start a destroyable test. Did you forget to call `enableDestroyableTracking()`'
     );
+  }
 
   const destructors = DESTRUCTORS as Map<object, WeakSet<Destructor>>;
-  const children = DESTROYABLE_PARENTS!;
+  const children = DESTROYABLE_PARENTS as Map<object, object>;
+
+  isTesting = false;
+  DESTRUCTORS = new WeakMap<object, Set<Destructor>>();
+  DESTROYABLE_PARENTS = new WeakMap<object, object>();
 
   if (destructors.size > 0 || children.size > 0) {
     const error = new Error(

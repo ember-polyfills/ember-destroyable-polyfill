@@ -5,5 +5,6 @@ export {
   registerDestructor,
   unregisterDestructor,
   destroy,
-  assertDestroyablesDestroyed
+  assertDestroyablesDestroyed,
+  enableDestroyableTracking
 } from './-internal/destructors';
