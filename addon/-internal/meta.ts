@@ -1,5 +1,4 @@
 /* eslint-disable no-bitwise */
-// import { gte } from 'ember-compatibility-helpers';
 import Ember from 'ember';
 
 import { gte } from 'ember-compatibility-helpers';
