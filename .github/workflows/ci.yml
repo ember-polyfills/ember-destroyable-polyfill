@@ -35,14 +35,10 @@ jobs:
           node-version: 12
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
-      - name: Lint JS
-        run: yarn lint:js
-      - name: Lint Types
-        run: yarn lint:types
-      - name: Lint Handlebars
-        run: yarn lint:hbs
+      - name: Lint
+        run: yarn lint
       - name: Browser Tests
-        run: yarn test
+        run: yarn test:ember
 
   test-old-dependencies:
     name: Oldest Supported Env
@@ -57,7 +53,7 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
       - name: Browser Tests
-        run: yarn test
+        run: yarn test:ember
 
   test-try:
     name: Ember Try
