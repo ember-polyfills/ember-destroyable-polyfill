@@ -127,7 +127,7 @@ module('destroyable', function (_hooks) {
     assertLifecycle(assert, 'destroyed', child);
 
     assert.verifySteps(
-      ['parent-first', 'parent-second', 'child-first', 'child-second'],
+      ['child-first', 'child-second', 'parent-first', 'parent-second'],
       'Destructors were called in correct order.'
     );
 
@@ -177,12 +177,12 @@ module('destroyable', function (_hooks) {
 
       assert.verifySteps(
         [
-          'parent-willDestroy',
-          'parent-first',
-          'parent-second',
           'child-willDestroy',
           'child-first',
-          'child-second'
+          'child-second',
+          'parent-willDestroy',
+          'parent-first',
+          'parent-second'
         ],
         'Destructors were called in correct order.'
       );
@@ -232,12 +232,12 @@ module('destroyable', function (_hooks) {
 
       assert.verifySteps(
         [
-          'parent-willDestroy',
-          'parent-first',
-          'parent-second',
           'child-willDestroy',
           'child-first',
-          'child-second'
+          'child-second',
+          'parent-willDestroy',
+          'parent-first',
+          'parent-second'
         ],
         'Destructors were called in correct order.'
       );
