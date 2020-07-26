@@ -1,6 +1,9 @@
 import { assert } from '@ember/debug';
 import { schedule } from '@ember/runloop';
 import { DEBUG } from '@glimmer/env';
+import Ember from 'ember';
+
+import { gte } from 'ember-compatibility-helpers';
 
 import { meta, deleteMeta } from './meta';
 
@@ -14,6 +17,29 @@ let DESTROYABLE_PARENTS:
   | Map<object, object>
   | WeakMap<object, object> = new WeakMap<object, object>();
 const DESTROYABLE_CHILDREN = new WeakMap<object, Set<object>>();
+
+let _internalRegisterDestructor: Function;
+let _internalAssociateDestroyableChild: Function;
+let _internalIsDestroying: Function;
+let _internalIsDestroyed: Function;
+let _internalUnregisterDestructor: Function;
+let _internalDestroy: Function;
+let _internalAssertDestroyablesDestroyed: Function;
+let _internalEnableDestroyableTracking: Function;
+
+if (gte('3.20.0-beta.4')) {
+  const glimmerRuntime = (Ember as any).__loader.require('@glimmer/runtime');
+
+  _internalRegisterDestructor = glimmerRuntime.registerDestructor;
+  _internalAssociateDestroyableChild = glimmerRuntime.associateDestroyableChild;
+  _internalIsDestroying = glimmerRuntime.isDestroying;
+  _internalIsDestroyed = glimmerRuntime.isDestroyed;
+  _internalUnregisterDestructor = glimmerRuntime.unregisterDestructor;
+  _internalDestroy = glimmerRuntime.destroy;
+  _internalAssertDestroyablesDestroyed =
+    glimmerRuntime.assertDestroyablesDestroyed;
+  _internalEnableDestroyableTracking = glimmerRuntime.enableDestroyableTracking;
+}
 
 function getDestructors<T extends object>(destroyable: T): Set<Destructor<T>> {
   if (!DESTRUCTORS.has(destroyable)) DESTRUCTORS.set(destroyable, new Set());
@@ -39,6 +65,10 @@ function getDestroyableChildren(destroyable: object): Set<object> {
  * ```
  */
 export function isDestroying(destroyable: object): boolean {
+  if (gte('3.20.0-beta.4')) {
+    return _internalIsDestroying(destroyable);
+  }
+
   return meta(destroyable).isSourceDestroying();
 }
 
@@ -56,6 +86,10 @@ export function isDestroying(destroyable: object): boolean {
  * ```
  */
 export function isDestroyed(destroyable: object): boolean {
+  if (gte('3.20.0-beta.4')) {
+    return _internalIsDestroyed(destroyable);
+  }
+
   return meta(destroyable).isSourceDestroyed();
 }
 
@@ -97,6 +131,10 @@ export function associateDestroyableChild<T extends object>(
   parent: object,
   child: T
 ): T {
+  if (gte('3.20.0-beta.4')) {
+    return _internalAssociateDestroyableChild(parent, child);
+  }
+
   if (DEBUG) assertNotDestroyed(parent);
   if (DEBUG) assertNotDestroyed(child);
 
@@ -152,6 +190,10 @@ export function registerDestructor<T extends object>(
   destroyable: T,
   destructor: Destructor<T>
 ): Destructor<T> {
+  if (gte('3.20.0-beta.4')) {
+    return _internalRegisterDestructor(destroyable, destructor);
+  }
+
   if (DEBUG) assertNotDestroyed(destroyable);
   const destructors = getDestructors(destroyable);
   assert(
@@ -193,6 +235,10 @@ export function unregisterDestructor<T extends object>(
   destroyable: T,
   destructor: Destructor<T>
 ): void {
+  if (gte('3.20.0-beta.4')) {
+    return _internalUnregisterDestructor(destroyable, destructor);
+  }
+
   if (DEBUG) assertNotDestroyed(destroyable);
   const destructors = getDestructors(destroyable);
   assert(
@@ -237,6 +283,11 @@ export function unregisterDestructor<T extends object>(
  *
  */
 export function destroy(destroyable: object): void {
+  if (gte('3.20.0-beta.4')) {
+    _internalDestroy(destroyable);
+    return;
+  }
+
   if (isDestroying(destroyable) || isDestroyed(destroyable)) return;
 
   const m = meta(destroyable);
@@ -275,6 +326,19 @@ interface UndestroyedDestroyablesAssertionError extends Error {
  * assertDestroyablesDestroyed later.
  */
 export function enableDestroyableTracking() {
+  if (gte('3.20.2')) {
+    return _internalEnableDestroyableTracking();
+  }
+  if (gte('3.20.0-beta.4')) {
+    // on 3.20.0-beta.4 through 3.20.2 (estimated) there is an issue with the upstream
+    // `assertDestroyablesDestroyed` method that triggers the assertion in cases that it
+    // should not; in order to allow code bases to function on those specific Ember versions
+    // (including our own test suite) we detect and do nothing
+    //
+    // See https://github.com/glimmerjs/glimmer-vm/pull/1119
+    return;
+  }
+
   DESTRUCTORS = new Map<object, Set<Destructor>>();
   DESTROYABLE_PARENTS = new Map<object, object>();
   isTesting = true;
@@ -288,6 +352,19 @@ export function enableDestroyableTracking() {
  * fact been destroyed.
  */
 export function assertDestroyablesDestroyed(): void | never {
+  if (gte('3.20.2')) {
+    return _internalAssertDestroyablesDestroyed();
+  }
+  if (gte('3.20.0-beta.4')) {
+    // on 3.20.0-beta.4 through 3.20.2 (estimated) there is an issue with the upstream
+    // `assertDestroyablesDestroyed` method that triggers the assertion in cases that it
+    // should not; in order to allow code bases to function on those specific Ember versions
+    // (including our own test suite) we detect and do nothing
+    //
+    // See https://github.com/glimmerjs/glimmer-vm/pull/1119
+    return;
+  }
+
   if (!isTesting) {
     throw new Error(
       'Attempted to assert destroyables destroyed, but you did not start a destroyable test. Did you forget to call `enableDestroyableTracking()`'
@@ -303,7 +380,7 @@ export function assertDestroyablesDestroyed(): void | never {
 
   if (destructors.size > 0 || children.size > 0) {
     const error = new Error(
-      `Not all destroyable objects were destroyed`
+      `Some destroyables were not destroyed during this test`
     ) as UndestroyedDestroyablesAssertionError;
 
     Object.defineProperty(error, 'destroyables', {

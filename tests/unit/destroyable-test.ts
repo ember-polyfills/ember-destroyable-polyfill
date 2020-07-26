@@ -14,6 +14,8 @@ import {
 import CoreObject from '@ember/object/core';
 import { run } from '@ember/runloop';
 
+import { gte } from 'ember-compatibility-helpers';
+
 function makeDestructor(
   assert: Assert,
   step: string,
@@ -247,6 +249,16 @@ module('destroyable', function (_hooks) {
   });
 
   module('assertDestroyablesDestroyed', function () {
+    if (gte('3.20.0-beta.4') && !gte('3.20.2')) {
+      // on 3.20.0-beta.4 through 3.20.2 (estimated) there is an issue with the upstream
+      // `assertDestroyablesDestroyed` method that triggers the assertion in cases that it
+      // should not; in order to allow code bases to function on those specific Ember versions
+      // (including our own test suite) we detect and do nothing
+      //
+      // See https://github.com/glimmerjs/glimmer-vm/pull/1119
+      return;
+    }
+
     test('it does not throw an error when destroyables have been destroyed', async function (assert) {
       assert.expect(1);
 
@@ -286,7 +298,7 @@ module('destroyable', function (_hooks) {
 
       assert.throws(() => {
         assertDestroyablesDestroyed();
-      }, /Not all destroyable objects were destroyed/);
+      }, /Some destroyables were not destroyed during this test/);
     });
 
     test('errors if `enableDestroyableTracking` was not called previously', async function (assert) {
