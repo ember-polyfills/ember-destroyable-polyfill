@@ -1,3 +1,4 @@
+import { settled } from '@ember/test-helpers';
 import { module, test } from 'qunit';
 
 import {
@@ -7,7 +8,8 @@ import {
   registerDestructor,
   unregisterDestructor,
   destroy,
-  assertDestroyablesDestroyed
+  assertDestroyablesDestroyed,
+  enableDestroyableTracking
 } from '@ember/destroyable';
 import CoreObject from '@ember/object/core';
 import { run } from '@ember/runloop';
@@ -91,7 +93,9 @@ function assertLifecycle(
 
 module('destroyable', function (_hooks) {
   test('basic smoke test', function (assert) {
-    assert.expect(23);
+    assert.expect(21);
+
+    enableDestroyableTracking();
 
     const parent = {
       toString() {
@@ -112,21 +116,11 @@ module('destroyable', function (_hooks) {
     assertLifecycle(assert, 'initialized', parent);
     assertLifecycle(assert, 'initialized', child);
 
-    assert.throws(
-      () => assertDestroyablesDestroyed(),
-      /Not all destroyable objects were destroyed/
-    );
-
     run(() => {
       destroy(parent);
 
       assertLifecycle(assert, 'destroying', parent);
       assertLifecycle(assert, 'destroying', child);
-
-      assert.throws(
-        () => assertDestroyablesDestroyed(),
-        /Not all destroyable objects were destroyed/
-      );
     });
 
     assertLifecycle(assert, 'destroyed', parent);
@@ -142,7 +136,9 @@ module('destroyable', function (_hooks) {
 
   module('integration with EmberObject', function () {
     test('destroy function', function (assert) {
-      assert.expect(37);
+      assert.expect(35);
+
+      enableDestroyableTracking();
 
       const parent = CoreObject.extend({
         toString() {
@@ -169,21 +165,11 @@ module('destroyable', function (_hooks) {
       assertLifecycle(assert, 'initialized', parent);
       assertLifecycle(assert, 'initialized', child);
 
-      assert.throws(
-        () => assertDestroyablesDestroyed(),
-        /Not all destroyable objects were destroyed/
-      );
-
       run(() => {
         destroy(parent);
 
         assertLifecycle(assert, 'destroying', parent);
         assertLifecycle(assert, 'destroying', child);
-
-        assert.throws(
-          () => assertDestroyablesDestroyed(),
-          /Not all destroyable objects were destroyed/
-        );
       });
 
       assertLifecycle(assert, 'destroyed', parent);
@@ -205,7 +191,9 @@ module('destroyable', function (_hooks) {
     });
 
     test('destroy hook', function (assert) {
-      assert.expect(37);
+      assert.expect(35);
+
+      enableDestroyableTracking();
 
       const parent = CoreObject.extend({
         toString() {
@@ -232,21 +220,11 @@ module('destroyable', function (_hooks) {
       assertLifecycle(assert, 'initialized', parent);
       assertLifecycle(assert, 'initialized', child);
 
-      assert.throws(
-        () => assertDestroyablesDestroyed(),
-        /Not all destroyable objects were destroyed/
-      );
-
       run(() => {
         parent.destroy();
 
         assertLifecycle(assert, 'destroying', parent);
         assertLifecycle(assert, 'destroying', child);
-
-        assert.throws(
-          () => assertDestroyablesDestroyed(),
-          /Not all destroyable objects were destroyed/
-        );
       });
 
       assertLifecycle(assert, 'destroyed', parent);
@@ -265,6 +243,56 @@ module('destroyable', function (_hooks) {
       );
 
       assertDestroyablesDestroyed();
+    });
+  });
+
+  module('assertDestroyablesDestroyed', function () {
+    test('it does not throw an error when destroyables have been destroyed', async function (assert) {
+      assert.expect(1);
+
+      enableDestroyableTracking();
+
+      const subject = {
+        toString() {
+          return 'subject';
+        }
+      };
+
+      registerDestructor(subject, () => {
+        assert.ok(true, 'destructor should be ran');
+      });
+
+      destroy(subject);
+
+      await settled();
+
+      assertDestroyablesDestroyed();
+    });
+
+    test('it throws an error when destroyables not destroyed', async function (assert) {
+      assert.expect(1);
+
+      enableDestroyableTracking();
+
+      const subject = {
+        toString() {
+          return 'subject';
+        }
+      };
+
+      registerDestructor(subject, () => {
+        assert.ok(false, 'destructor should not be ran');
+      });
+
+      assert.throws(() => {
+        assertDestroyablesDestroyed();
+      }, /Not all destroyable objects were destroyed/);
+    });
+
+    test('errors if `enableDestroyableTracking` was not called previously', async function (assert) {
+      assert.throws(() => {
+        assertDestroyablesDestroyed();
+      }, /Attempted to assert destroyables destroyed, but you did not start a destroyable test. Did you forget to call `enableDestroyableTracking\(\)`/);
     });
   });
 });
