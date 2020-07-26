@@ -68,9 +68,10 @@ jobs:
         scenario:
           - ember-lts-3.12
           - ember-lts-3.16
-          - ember-release
-          - ember-beta
-          - ember-canary
+            # TODO: bring this back once Ember >= 3.20 is fixed
+            # - ember-release
+            # - ember-beta
+            # - ember-canary
     steps:
       - name: Checkout Code
         uses: actions/checkout@v1
