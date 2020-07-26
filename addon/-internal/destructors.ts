@@ -252,12 +252,11 @@ export function runDestructors(destroyable: object): void {
 
   const m = meta(destroyable);
 
-  schedule('actions', () => {
-    for (const destructor of getDestructors(destroyable))
-      destructor(destroyable);
-  });
-
   for (const child of getDestroyableChildren(destroyable)) destroy(child);
+
+  for (const destructor of getDestructors(destroyable)) {
+    schedule('actions', undefined, destructor, destroyable);
+  }
 
   schedule('destroy', () => {
     deleteMeta(destroyable);
