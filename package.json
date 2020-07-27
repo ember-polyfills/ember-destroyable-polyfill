@@ -11,11 +11,18 @@
     "ember-lifeline",
     "ember-concurrency"
   ],
-  "repository": "ember-polyfills/ember-destroyable-polyfill",
+  "homepage": "https://github.com/ember-polyfills/ember-destroyable-polyfill#readme",
+  "bugs": {
+    "url": "https://github.com/ember-polyfills/ember-destroyable-polyfill/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ember-polyfills/ember-destroyable-polyfill.git"
+  },
   "license": "MIT",
   "author": "Jan Buschtöns <jan@buschtoens.me> (https://jan.buschtoens.me)",
+  "main": "index.js",
   "directories": {
-    "doc": "doc",
     "test": "tests"
   },
   "scripts": {
