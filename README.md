@@ -13,9 +13,6 @@ Polyfill for [RFC 580 "Destroyables"][rfc-580].
 
 [rfc-580]: https://github.com/emberjs/rfcs/pull/580
 
-> ⚠️The RFC is currently in Final Comment Period and hasn't been merged yet.
-> Things may still change.
-
 ## Installation
 
 ```bash
