@@ -61,3 +61,26 @@ class MyComponent extends Component {
 
 For detailed usage instructions, refer to the
 [RFC 580 "Destroyables"][rfc-580].
+
+## TypeScript Usage
+
+TypeScript's normal type resolution for an import from `@ember/destroyable`
+will **not** find this the types provided by this package (since TypeScript
+would attempt to resolve it as `node_modules/@ember/destroyable` or under
+the Definitely Typed location for `@ember/destroyable`). Once the
+`@ember/destroyable` API is a documented part of Ember's API, the
+Definitely Typed folks will gladly accept adding that API, but in the
+meantime users will need to modify their `tsconfig.json` to tell TypeScript
+where these types are.
+
+Add the following to your `tsconfig.json`:
+
+```js
+{
+  // ...snip...
+  "paths": {
+    // ...snip...
+    "@ember/destroyable": ["node_modules/ember-destroyable-polyfill"],
+  }
+}
+```
