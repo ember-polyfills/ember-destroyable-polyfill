@@ -1,3 +1,17 @@
+## v1.0.1 (2020-07-30)
+
+#### :bug: Bug Fix
+* [#74](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/74) Ensure interop with `ember-cli-babel` transpilation of `@ember/destroyable` ([@rwjblue](https://github.com/rwjblue))
+
+#### :memo: Documentation
+* [#73](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/73) Add documentation about TypeScript usage. ([@rwjblue](https://github.com/rwjblue))
+* [#72](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/72) docs(README): remove RFC FCP warning ([@buschtoens](https://github.com/buschtoens))
+
+#### Committers: 2
+- Jan Buschtöns ([@buschtoens](https://github.com/buschtoens))
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v1.0.0 (2020-07-27)
 
 #### :boom: Breaking Change
