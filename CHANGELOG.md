@@ -1,3 +1,12 @@
+## v1.0.2 (2020-07-31)
+
+#### :bug: Bug Fix
+* [#75](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/75) Ensure functionality with ember-cli-babel@7.22.0. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v1.0.1 (2020-07-30)
 
 #### :bug: Bug Fix
