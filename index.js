@@ -6,6 +6,7 @@ let hasBeenWarned = false;
 
 module.exports = {
   name: require('./package').name,
+
   included() {
     this._super.included.apply(this, arguments);
     this._ensureThisImport();
@@ -21,6 +22,18 @@ module.exports = {
       );
       hasBeenWarned = true;
     }
+  },
+
+  treeForVendor(tree) {
+    const babel = this.addons.find((a) => a.name === 'ember-cli-babel');
+
+    return babel.transpileTree(tree, {
+      babel: this.options.babel,
+
+      'ember-cli-babel': {
+        compileModules: false,
+      },
+    });
   },
 
   _ensureThisImport() {
