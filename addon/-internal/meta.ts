@@ -181,17 +181,3 @@ export const Meta = gte('3.6.0')
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 export const meta = Ember.meta as (obj: object) => Meta;
-
-/**
- * Tears down the meta on an object so that it can be garbage collected.
- * Multiple calls will have no effect.
- *
- * @see https://github.com/emberjs/ember.js/blob/4e254b3937abf7b6221eee11ae77f3b8a9878777/packages/@ember/-internals/meta/lib/meta.ts#L660
- * @see https://github.com/emberjs/ember.js/blob/bf273deb002904d85bf2b832c8877739920d7a08/packages/ember/index.js#L334
- *
- * @param {Object} obj  the object to destroy
- * @return {void}
- */
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-export const deleteMeta = Ember.destroy as (obj: object) => void;
