@@ -8,6 +8,7 @@
 
       var destroyables = require('ember-destroyable-polyfill');
 
+      Ember.destroy = destroyables.destroy;
       Ember._registerDestructor = destroyables.registerDestructor;
       Ember._unregisterDestructor = destroyables.unregisterDestructor;
       Ember._associateDestroyableChild = destroyables.associateDestroyableChild;

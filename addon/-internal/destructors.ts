@@ -5,7 +5,7 @@ import Ember from 'ember';
 
 import { gte } from 'ember-compatibility-helpers';
 
-import { meta, deleteMeta } from './meta';
+import { meta } from './meta';
 
 export type Destructor<T extends object = object> = (destroyable: T) => void;
 
@@ -17,6 +17,20 @@ let DESTROYABLE_PARENTS:
   | Map<object, object>
   | WeakMap<object, object> = new WeakMap<object, object>();
 const DESTROYABLE_CHILDREN = new WeakMap<object, Set<object>>();
+
+/**
+ * Tears down the meta on an object so that it can be garbage collected.
+ * Multiple calls will have no effect.
+ *
+ * On Ember < 3.16.4 this just calls `meta.destroy`
+ * On Ember >= 3.16.4 this calls setSourceDestroying and schedules setSourceDestroyed + `meta.destroy`
+ *
+ * @param {Object} obj  the object to destroy
+ * @return {void}
+ */
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
+const _upstreamDestroy = Ember.destroy as (obj: object) => void;
 
 let _internalRegisterDestructor: Function;
 let _internalAssociateDestroyableChild: Function;
@@ -290,6 +304,12 @@ export function destroy(destroyable: object): void {
 
   if (isDestroying(destroyable) || isDestroyed(destroyable)) return;
 
+  if (gte('3.16.4')) {
+    // Ember.destroy calls setSourceDestroying (which runs runDestructors) and schedules setSourceDestroyed
+    _upstreamDestroy(destroyable);
+    return;
+  }
+
   const m = meta(destroyable);
 
   m.setSourceDestroying(); // This calls `runDestructors`
@@ -310,8 +330,11 @@ export function runDestructors(destroyable: object): void {
   }
 
   schedule('destroy', () => {
-    deleteMeta(destroyable);
-    m.setSourceDestroyed();
+    if (!gte('3.16.4')) {
+      // between Ember 2.18 and 3.16.4 Ember.destroy
+      _upstreamDestroy(destroyable);
+      m.setSourceDestroyed();
+    }
     DESTRUCTORS.delete(destroyable);
     DESTROYABLE_PARENTS.delete(destroyable);
   });
