@@ -42,7 +42,6 @@ type Listener = StringListener | FunctionListener;
 /**
  * @see https://github.com/emberjs/ember.js/blob/4e254b3937abf7b6221eee11ae77f3b8a9878777/packages/@ember/-internals/meta/lib/meta.ts#L96
  */
-// eslint-disable-next-line @typescript-eslint/class-name-casing
 declare class _Meta {
   private _descriptors: Map<string, any> | undefined;
   private _mixins: any | undefined;
@@ -155,12 +154,10 @@ declare class _Meta {
 
 export type Meta = _Meta;
 export const Meta = gte('3.6.0')
-  ? // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
+  ? // @ts-ignore
     (Ember.__loader.require('@ember/-internals/meta/lib/meta')
       .Meta as typeof _Meta)
-  : // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
+  : // @ts-ignore
     (Ember.__loader.require('ember-meta/lib/meta').Meta as typeof _Meta);
 
 /**
@@ -178,6 +175,4 @@ export const Meta = gte('3.6.0')
  * @param {Object} obj The object to retrieve meta for
  * @return {Object} the meta hash for an object
  */
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-export const meta = Ember.meta as (obj: object) => Meta;
+export const meta = (Ember as any).meta as (obj: object) => Meta;

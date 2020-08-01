@@ -9,7 +9,6 @@ import GlimmerComponent from '@glimmer/component';
 
 import { hbs } from 'ember-cli-htmlbars';
 import { gte } from 'ember-compatibility-helpers';
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
 import Modifier from 'ember-modifier';
 

@@ -93,7 +93,7 @@ function assertLifecycle(
   }
 }
 
-module('destroyable', function (_hooks) {
+module('destroyable', function () {
   test('basic smoke test', function (assert) {
     assert.expect(21);
 

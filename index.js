@@ -6,9 +6,8 @@ let hasBeenWarned = false;
 
 module.exports = {
   name: require('./package').name,
-  included(...args) {
-    // eslint-disable-next-line unicorn/prefer-reflect-apply
-    this._super.included.apply(this, args);
+  included() {
+    this._super.included.apply(this, arguments);
     this._ensureThisImport();
 
     const checker = new VersionChecker(this);

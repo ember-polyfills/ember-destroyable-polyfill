@@ -28,9 +28,7 @@ const DESTROYABLE_CHILDREN = new WeakMap<object, Set<object>>();
  * @param {Object} obj  the object to destroy
  * @return {void}
  */
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
-const _upstreamDestroy = Ember.destroy as (obj: object) => void;
+const _upstreamDestroy = (Ember as any).destroy as (obj: object) => void;
 
 let _internalRegisterDestructor: Function;
 let _internalAssociateDestroyableChild: Function;
