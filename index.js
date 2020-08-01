@@ -40,5 +40,5 @@ module.exports = {
         app.import(asset, options);
       };
     }
-  }
+  },
 };

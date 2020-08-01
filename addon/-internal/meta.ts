@@ -12,13 +12,13 @@ enum MetaFlags {
   SOURCE_DESTROYING = 1 << 0,
   SOURCE_DESTROYED = 1 << 1,
   META_DESTROYED = 1 << 2,
-  INITIALIZING = 1 << 3
+  INITIALIZING = 1 << 3,
 }
 
 enum ListenerKind {
   ADD = 0,
   ONCE = 1,
-  REMOVE = 2
+  REMOVE = 2,
 }
 
 interface StringListener {

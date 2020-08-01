@@ -409,7 +409,7 @@ export function assertDestroyablesDestroyed(): void | never {
     Object.defineProperty(error, 'destroyables', {
       get() {
         return [...new Set([...destructors.keys(), ...children.keys()])];
-      }
+      },
     });
 
     throw error;

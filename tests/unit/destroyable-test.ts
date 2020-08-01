@@ -9,7 +9,7 @@ import {
   unregisterDestructor,
   destroy,
   assertDestroyablesDestroyed,
-  enableDestroyableTracking
+  enableDestroyableTracking,
 } from '@ember/destroyable';
 import CoreObject from '@ember/object/core';
 import { run } from '@ember/runloop';
@@ -102,12 +102,12 @@ module('destroyable', function (_hooks) {
     const parent = {
       toString() {
         return 'parent';
-      }
+      },
     };
     const child = {
       toString() {
         return 'child';
-      }
+      },
     };
 
     associateDestroyableChild(parent, child);
@@ -148,7 +148,7 @@ module('destroyable', function (_hooks) {
         },
         willDestroy() {
           assert.step('parent-willDestroy');
-        }
+        },
       }).create();
       const child = CoreObject.extend({
         toString() {
@@ -156,7 +156,7 @@ module('destroyable', function (_hooks) {
         },
         willDestroy() {
           assert.step('child-willDestroy');
-        }
+        },
       }).create();
 
       associateDestroyableChild(parent, child);
@@ -184,7 +184,7 @@ module('destroyable', function (_hooks) {
           'child-second',
           'parent-willDestroy',
           'parent-first',
-          'parent-second'
+          'parent-second',
         ],
         'Destructors were called in correct order.'
       );
@@ -203,7 +203,7 @@ module('destroyable', function (_hooks) {
         },
         willDestroy() {
           assert.step('parent-willDestroy');
-        }
+        },
       }).create();
       const child = CoreObject.extend({
         toString() {
@@ -211,7 +211,7 @@ module('destroyable', function (_hooks) {
         },
         willDestroy() {
           assert.step('child-willDestroy');
-        }
+        },
       }).create();
 
       associateDestroyableChild(parent, child);
@@ -239,7 +239,7 @@ module('destroyable', function (_hooks) {
           'child-second',
           'parent-willDestroy',
           'parent-first',
-          'parent-second'
+          'parent-second',
         ],
         'Destructors were called in correct order.'
       );
@@ -267,7 +267,7 @@ module('destroyable', function (_hooks) {
       const subject = {
         toString() {
           return 'subject';
-        }
+        },
       };
 
       registerDestructor(subject, () => {
@@ -289,7 +289,7 @@ module('destroyable', function (_hooks) {
       const subject = {
         toString() {
           return 'subject';
-        }
+        },
       };
 
       registerDestructor(subject, () => {
