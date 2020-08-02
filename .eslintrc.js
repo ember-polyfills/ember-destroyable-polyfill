@@ -10,8 +10,9 @@ module.exports = {
   plugins: ['prettier'],
   extends: ['eslint:recommended', 'prettier'],
   env: {
-    node: true,
+    es6: true,
   },
+
   rules: {
     'prettier/prettier': 'error',
   },
@@ -35,6 +36,7 @@ module.exports = {
         'addon-test-support/**',
         'app/**',
         'tests/dummy/app/**',
+        'vendor/**',
       ],
       parserOptions: {
         sourceType: 'script',
@@ -47,23 +49,15 @@ module.exports = {
       extends: ['plugin:node/recommended'],
     },
 
-    // TypeScript files
     {
-      files: ['**/*.ts'],
+      files: ['vendor/**/*.js'],
 
-      parser: '@typescript-eslint/parser',
-      parserOptions: {
-        ecmaVersion: 2018,
-        sourceType: 'module',
+      env: {
+        browser: true,
       },
 
-      plugins: ['@typescript-eslint'],
-      extends: ['plugin:@typescript-eslint/eslint-recommended'],
       rules: {
-        'no-array-constructor': 'off',
-        '@typescript-eslint/no-array-constructor': 'error',
-        'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': 'warn',
+        'no-inner-declarations': 'off',
       },
     },
   ],
