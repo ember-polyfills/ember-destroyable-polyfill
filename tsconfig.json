@@ -47,6 +47,7 @@
     "addon/**/*",
     "tests/**/*",
     "test-support/**/*",
-    "addon-test-support/**/*"
+    "addon-test-support/**/*",
+    "vendor/**/*"
   ]
 }
