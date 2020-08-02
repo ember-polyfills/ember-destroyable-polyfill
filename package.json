@@ -1,6 +1,6 @@
 {
   "name": "ember-destroyable-polyfill",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Polyfill for RFC 580: Destroyables",
   "keywords": [
     "ember-addon",

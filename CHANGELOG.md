@@ -1,3 +1,22 @@
+## v2.0.0 (2020-08-02)
+
+#### :boom: Breaking Change
+* [#80](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/80) Move implementation into `vendor/`. ([@rwjblue](https://github.com/rwjblue))
+* [#79](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/79) Require ember-cli-babel@7.22.1 or higher. ([@rwjblue](https://github.com/rwjblue))
+
+#### :rocket: Enhancement
+* [#82](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/82) Make polyfill inert on Ember 3.22+ ([@rwjblue](https://github.com/rwjblue))
+
+#### :memo: Documentation
+* [#81](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/81) Add typing information and API documentation back. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#76](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/76) Refactor linting setup. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v1.0.2 (2020-07-31)
 
 #### :bug: Bug Fix
