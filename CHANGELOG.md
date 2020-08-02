@@ -1,3 +1,12 @@
+## v2.0.1 (2020-08-02)
+
+#### :bug: Bug Fix
+* [#84](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/84) Fix types file (must use declare module). ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v2.0.0 (2020-08-02)
 
 #### :boom: Breaking Change
