@@ -21,6 +21,13 @@ ember install ember-destroyable-polyfill
 
 For addons, pass the `-S` flag.
 
+## Compatibility
+
+* Ember.js v3.4 or above
+* `ember-cli-babel` v7.22.1 or above
+* Ember CLI v2.13 or above
+* Node.js v10 or above
+
 ## Summary
 
 Adds an API for registering destroyables and destructors with Ember's built in

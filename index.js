@@ -1,7 +1,7 @@
 'use strict';
 
 const VersionChecker = require('ember-cli-version-checker');
-const NATIVE_SUPPORT_VERSION = '4.0.0'; // @TODO set correct version, once support is available
+const NATIVE_SUPPORT_VERSION = '3.22.0-alpha.1';
 let hasBeenWarned = false;
 
 module.exports = {
@@ -14,7 +14,7 @@ module.exports = {
     const checker = new VersionChecker(this);
     const emberVersion = checker.for('ember-source');
 
-    if (emberVersion.lt('4.0.0')) {
+    if (emberVersion.lt(NATIVE_SUPPORT_VERSION)) {
       this.import('vendor/ember-destroyable-polyfill/index.js');
     } else if (this.parent === this.project && !hasBeenWarned) {
       this.ui.writeWarnLine(
