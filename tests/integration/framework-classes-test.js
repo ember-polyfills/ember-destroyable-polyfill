@@ -9,7 +9,6 @@ import GlimmerComponent from '@glimmer/component';
 
 import { hbs } from 'ember-cli-htmlbars';
 import { gte } from 'ember-compatibility-helpers';
-// @ts-ignore
 import Modifier from 'ember-modifier';
 
 module('Framework Classes Integration', function (hooks) {
@@ -20,7 +19,7 @@ module('Framework Classes Integration', function (hooks) {
       this.owner.register(
         'component:dummy',
         class DummyComponent extends GlimmerComponent {
-          constructor(owner: unknown, args: {}) {
+          constructor(owner, args) {
             super(owner, args);
 
             registerDestructor(this, () => assert.step('destructor'));
@@ -39,7 +38,7 @@ module('Framework Classes Integration', function (hooks) {
     this.owner.register(
       'component:dummy',
       class DummyComponent extends EmberComponent {
-        constructor(properties?: object) {
+        constructor(properties) {
           super(properties);
 
           registerDestructor(this, () => assert.step('destructor'));
@@ -57,7 +56,7 @@ module('Framework Classes Integration', function (hooks) {
     this.owner.register(
       'helper:dummy',
       class DummyHelper extends Helper {
-        constructor(properties?: object) {
+        constructor(properties) {
           super(properties);
 
           registerDestructor(this, () => assert.step('destructor'));
@@ -77,7 +76,7 @@ module('Framework Classes Integration', function (hooks) {
     this.owner.register(
       'modifier:dummy',
       class DummyHelper extends Modifier {
-        constructor(properties?: object) {
+        constructor(properties) {
           super(properties);
 
           registerDestructor(this, () => assert.step('destructor'));

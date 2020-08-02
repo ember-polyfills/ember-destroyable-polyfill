@@ -16,12 +16,8 @@ import { run } from '@ember/runloop';
 
 import { gte } from 'ember-compatibility-helpers';
 
-function makeDestructor(
-  assert: Assert,
-  step: string,
-  expectedInstance: object
-) {
-  function destructor(instance: object) {
+function makeDestructor(assert, step, expectedInstance) {
+  function destructor(instance) {
     assert.step(step);
     assert.strictEqual(
       instance,
@@ -33,11 +29,7 @@ function makeDestructor(
   return destructor;
 }
 
-function registerTestDestructors(
-  assert: Assert,
-  label: string,
-  destroyable: object
-) {
+function registerTestDestructors(assert, label, destroyable) {
   const unregistered = makeDestructor(
     assert,
     `${label}-unregistered`,
@@ -55,11 +47,7 @@ function registerTestDestructors(
   unregisterDestructor(destroyable, unregistered);
 }
 
-function assertLifecycle(
-  assert: Assert,
-  expected: 'initialized' | 'destroying' | 'destroyed',
-  destroyable: object
-) {
+function assertLifecycle(assert, expected, destroyable) {
   const expectedDestroyed = expected === 'destroyed';
   // https://github.com/emberjs/rfcs/pull/580#discussion_r407224630
   const expectedDestroying = expectedDestroyed || expected === 'destroying';

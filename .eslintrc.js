@@ -60,25 +60,5 @@ module.exports = {
         'no-inner-declarations': 'off',
       },
     },
-
-    // TypeScript files
-    {
-      files: ['**/*.ts'],
-
-      parser: '@typescript-eslint/parser',
-      parserOptions: {
-        ecmaVersion: 2018,
-        sourceType: 'module',
-      },
-
-      plugins: ['@typescript-eslint'],
-      extends: ['plugin:@typescript-eslint/eslint-recommended'],
-      rules: {
-        'no-array-constructor': 'off',
-        '@typescript-eslint/no-array-constructor': 'error',
-        'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': 'warn',
-      },
-    },
   ],
 };
