@@ -10,8 +10,9 @@ module.exports = {
   plugins: ['prettier'],
   extends: ['eslint:recommended', 'prettier'],
   env: {
-    node: true,
+    es6: true,
   },
+
   rules: {
     'prettier/prettier': 'error',
   },
@@ -35,6 +36,7 @@ module.exports = {
         'addon-test-support/**',
         'app/**',
         'tests/dummy/app/**',
+        'vendor/**',
       ],
       parserOptions: {
         sourceType: 'script',
@@ -45,6 +47,18 @@ module.exports = {
       },
       plugins: ['node'],
       extends: ['plugin:node/recommended'],
+    },
+
+    {
+      files: ['vendor/**/*.js'],
+
+      env: {
+        browser: true,
+      },
+
+      rules: {
+        'no-inner-declarations': 'off',
+      },
     },
 
     // TypeScript files
