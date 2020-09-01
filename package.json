@@ -41,7 +41,7 @@
     "ember-compatibility-helpers": "^1.2.1"
   },
   "devDependencies": {
-    "@clark/ember-template-lint-config": "^0.2.1",
+    "@clark/ember-template-lint-config": "^0.2.2",
     "@ember/optional-features": "^1.3.0",
     "@glimmer/component": "^1.0.1",
     "@glimmer/tracking": "^1.0.1",
