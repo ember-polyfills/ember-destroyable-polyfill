@@ -35,6 +35,9 @@
     "test:ember": "ember test",
     "test:ember-compatibility": "ember try:each"
   },
+  "resolutions": {
+    "**/ember-destroyable-polyfill": "link:./"
+  },
   "dependencies": {
     "ember-cli-babel": "^7.22.1",
     "ember-cli-version-checker": "^5.1.1",
