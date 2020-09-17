@@ -1,3 +1,15 @@
+## v2.0.2 (2020-09-17)
+
+#### :bug: Bug Fix
+* [#112](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/112) Avoid errors when `super.init` is called multiple times. ([@rwjblue](https://github.com/rwjblue))
+
+#### :house: Internal
+* [#111](https://github.com/ember-polyfills/ember-destroyable-polyfill/pull/111) Ensure the local version is used. ([@rwjblue](https://github.com/rwjblue))
+
+#### Committers: 1
+- Robert Jackson ([@rwjblue](https://github.com/rwjblue))
+
+
 ## v2.0.1 (2020-08-02)
 
 #### :bug: Bug Fix
