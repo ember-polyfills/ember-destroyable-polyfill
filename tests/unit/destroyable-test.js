@@ -180,6 +180,41 @@ module('destroyable', function () {
       assertDestroyablesDestroyed();
     });
 
+    test('calling `.init` multiple times does not error', function (assert) {
+      enableDestroyableTracking();
+
+      const thing = CoreObject.extend({
+        toString() {
+          return 'thing';
+        },
+        willDestroy() {
+          assert.step('thing-willDestroy');
+        },
+      }).create();
+
+      // this is horrible, but we cannot actually guarantee `init` is only called once
+      thing.init();
+      thing.init();
+      thing.init();
+
+      registerTestDestructors(assert, 'thing', thing);
+
+      assertLifecycle(assert, 'initialized', thing);
+
+      run(() => {
+        destroy(thing);
+
+        assertLifecycle(assert, 'destroying', thing);
+      });
+
+      assert.verifySteps(
+        ['thing-willDestroy', 'thing-first', 'thing-second'],
+        'Destructors were called in correct order.'
+      );
+
+      assertDestroyablesDestroyed();
+    });
+
     test('destroy hook', function (assert) {
       assert.expect(35);
 

@@ -214,8 +214,14 @@ import { gte } from 'ember-compatibility-helpers';
 
     const callWillDestroy = (instance) => instance.willDestroy();
 
+    // would prefer a WeakSet here but not available on IE11
+    const willDestroyRegistered = new WeakMap();
+
     Ember.CoreObject.prototype.init = function destroyablesPolyfill_init() {
-      registerDestructor(this, callWillDestroy);
+      if (!willDestroyRegistered.has(this)) {
+        registerDestructor(this, callWillDestroy);
+        willDestroyRegistered.set(this, true);
+      }
     };
 
     Ember.CoreObject.prototype.destroy = function destroyablesPolyfill_destroy() {
