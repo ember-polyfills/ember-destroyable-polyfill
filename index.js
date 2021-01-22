@@ -11,7 +11,7 @@ module.exports = {
     this._super.included.apply(this, arguments);
     this._ensureThisImport();
 
-    const checker = new VersionChecker(this);
+    const checker = new VersionChecker(this.project);
     const emberVersion = checker.for('ember-source');
 
     if (emberVersion.lt(NATIVE_SUPPORT_VERSION)) {
