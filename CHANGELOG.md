@@ -1,3 +1,8 @@
+## v2.0.3 (2021-01-22)
+
+- fix: find `ember-source` version of project (#136) [@alexlafroscia)](https://github.com/alexlafroscia)
+
+
 ## v2.0.2 (2020-09-17)
 
 #### :bug: Bug Fix
