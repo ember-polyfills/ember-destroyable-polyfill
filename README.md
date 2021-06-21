@@ -23,7 +23,7 @@ For addons, pass the `-S` flag.
 
 ## Compatibility
 
-* Ember.js v3.4 or above
+* Ember.js v3.4 or above; completely inert for v3.22.0-alpha.1 and above
 * `ember-cli-babel` v7.22.1 or above
 * Ember CLI v2.13 or above
 * Node.js v10 or above
